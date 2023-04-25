@@ -128,6 +128,60 @@ services:
     image: shawnzhu/prestodb:0.181
     ports:
       - "8080:8080"
+  master:
+    image: bitnami/spark:latest
+    container_name: master
+    user: root
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_MASTER_WEBUI_PORT=6060
+    ports:
+      - '6060:6060'
+      - '7077:7077'
+    volumes:
+      - /d/1/python/pythoncode/test:/python
+  worker1:
+    image: bitnami/spark:latest
+    container_name: worker1
+    user: root
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+  worker2:
+    image: bitnami/spark:latest
+    container_name: worker2
+    user: root
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+  mysql:
+    restart: always
+    image: mysql:latest
+    container_name: mysql-lable
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=mydb
+      - TZ=Asia/Shanghai
+    ports:
+      # 使用宿主机的3306端口映射到容器的3306端口
+      # 宿主机：容器
+      - 3306:3306
 volumes:
   hadoop_namenode:
   hadoop_datanode:
